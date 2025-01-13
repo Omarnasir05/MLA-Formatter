@@ -1,11 +1,15 @@
 package com.example;
+import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
@@ -23,7 +27,8 @@ public class EssayFormatter {
             userConfirmation = userInput2.nextLine();
         } while (userConfirmation.equalsIgnoreCase("No"));
 
-        wordDoc(stringlist);
+
+        wordDoc(stringlist, stringlist.get(4));
 
         userInput2.close();
     }
@@ -66,8 +71,11 @@ public class EssayFormatter {
         return stringlist;
     }
 
-    public static void wordDoc(List<String> stringlist) {
+    public static void wordDoc(List<String> stringlist, String title) {
+            PrintWriter printer = null;
             Scanner userInput3 = new Scanner(System.in);
+
+            stringlist.remove(4);
 
             System.out.print("What would you like to name your file?:");
             String fileName = userInput3.nextLine();
@@ -77,36 +85,68 @@ public class EssayFormatter {
             XWPFParagraph content = file.createParagraph();
             XWPFRun run = content.createRun();
 
+            
 
-            for(String line : stringlist){
-            run.setFontSize(12);
-            run.setFontFamily("Times New Roman");
-            content.setSpacingBetween(2);
-            run.setText( line);
-            run.addBreak();
-            }
-
-            System.out.print("Please enter your essay that you would like to be converted into MLA Format:");
-            String essay= userInput3.nextLine();
-            XWPFParagraph content2= file.createParagraph();
-            XWPFRun run2 = content2.createRun();
-            content2.setSpacingBetween(2);
-            run2.setFontSize(12);
-            run2.setFontFamily("Times New Roman");
-            run2.setText(essay);
-    
-
+            System.out.print("Please enter the path of your essay file:");
             try{
                 FileOutputStream output = new FileOutputStream(fileName);
+                run.setFontSize(12);
+                run.setFontFamily("Times New Roman");
+                content.setSpacingBetween(2);
+
+                for(String line : stringlist){
+                    run.setText(line);
+                    if(!stringlist.get(3).equalsIgnoreCase(line))
+                        run.addBreak();
+                }
+                //file.write(output);
+
+                XWPFParagraph titleParagraph = file.createParagraph();
+                titleParagraph.setAlignment(ParagraphAlignment.CENTER);
+                XWPFRun titleRun = titleParagraph.createRun();
+                titleParagraph.setSpacingBetween(2);
+                titleRun.setFontSize(12); 
+                titleRun.setFontFamily("Times New Roman");
+                titleRun.setText(title);
+        
+                //content.setAlignment(ParagraphAlignment.CENTER);
+                //run.setText(title);
+                //run.addBreak();
+                //file.write(output);
+                //content.setAlignment(ParagraphAlignment.LEFT);
+
+
+                File usersFile = new File(userInput3.nextLine());
+                userInput3.close();
+                Scanner fileReader = new Scanner(usersFile);
+                FileWriter fw = new FileWriter(fileName);
+                printer = new PrintWriter(fw);
+                String w = fileReader.nextLine();
+
+              
+                XWPFParagraph bodyParagraph = file.createParagraph();
+                bodyParagraph.setAlignment(ParagraphAlignment.LEFT);
+                XWPFRun bodyRun = bodyParagraph.createRun();
+                bodyParagraph.setSpacingBetween(2);
+                bodyRun.setFontSize(12); 
+                bodyRun.setFontFamily("Times New Roman");
+                bodyRun.setText(w);
+
+                printer.close();
+                fileReader.close();
+               
+
+                
                 file.write(output);
                 output.close();
-
-                System.out.println("File created successfully: " + fileName);
             }
             catch (IOException e) {
                 System.out.println("An error occurred while writing to the file.");
-            e.printStackTrace();
-        }
+                e.printStackTrace();
+            }
+
+
+            System.out.println("File created successfully: " + fileName);
     }
 
 }
