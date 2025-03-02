@@ -10,7 +10,7 @@
             "server": "localhost",
             "port": 3306,
             "driver": "MySQL",
-            "name": "EssayFormatter Local",
+            "name": "EssayFormatterDatabase",
             "database": "new_db",
             "username": "root",
             "connectionTimeout": 30

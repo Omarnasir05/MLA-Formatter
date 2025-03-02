@@ -4,9 +4,14 @@ import java.io.BufferedReader;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
@@ -16,9 +21,20 @@ import org.apache.poi.xwpf.usermodel.XWPFRun;
 
 public class EssayFormatter {
     public static void main(String[] args) {
+        String url = "jdbc:mysql://localhost:3306/EssayFormatterDatabase";
+        String username = "root";
+        String password = "Lyth2000";
+
         Scanner userInput2 = new Scanner(System.in);
         String userConfirmation = "";
+        String email;
         List<String> stringlist;
+
+        System.out.println("Please enter your email:");
+        email = userInput2.nextLine();
+
+        Random random = new Random();
+        int user_id = random.nextInt(1000);
 
         do {
             stringlist = createHeader();
@@ -30,7 +46,33 @@ public class EssayFormatter {
 
         wordDocWithReferences(stringlist, stringlist.get(4));
         userInput2.close();
-        
+
+        String sql = "INSERT INTO user (column1, column2) VALUES (, )";
+
+        try {
+            // Load MySQL driver
+            Class.forName("com.mysql.cj.jdbc.Driver");
+
+            // Establish connection
+            Connection con = DriverManager.getConnection(url, username, password);
+
+            // Prepare SQL statement
+            PreparedStatement pst = con.prepareStatement(sql);
+
+            // Set values for placeholders
+            pst.setString(1, "value1");
+            pst.setInt(2, 123);
+
+            // Execute the update
+            int rowsAffected = pst.executeUpdate();
+            System.out.println(rowsAffected + " row(s) inserted.");
+
+            // Close resources
+            pst.close();
+            con.close();
+        } catch (SQLException | ClassNotFoundException ex) {
+            ex.printStackTrace();
+        }
     }
 
     public static List<String> createHeader() {
@@ -69,7 +111,6 @@ public class EssayFormatter {
         stringlist.add(title);
 
         userInput.close();
-
         return stringlist;
     }
 
@@ -111,54 +152,55 @@ public class EssayFormatter {
 
             // Copy content from an existing file
             try (BufferedReader reader = new BufferedReader(new FileReader(sourcePath))) {
-            XWPFParagraph bodyParagraph = file.createParagraph();
-            bodyParagraph.setAlignment(ParagraphAlignment.LEFT);
-            bodyParagraph.setFirstLineIndent(700);
-            bodyParagraph.setSpacingBetween(2);
+                XWPFParagraph bodyParagraph = file.createParagraph();
+                bodyParagraph.setAlignment(ParagraphAlignment.LEFT);
+                bodyParagraph.setFirstLineIndent(700);
+                bodyParagraph.setSpacingBetween(2);
 
-            String line;
-            while ((line = reader.readLine()) != null) {
-                XWPFRun bodyRun = bodyParagraph.createRun();
-                bodyRun.setFontSize(12);
-                bodyRun.setFontFamily("Times New Roman");
-                bodyRun.setText(line);
-                bodyRun.addBreak();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    XWPFRun bodyRun = bodyParagraph.createRun();
+                    bodyRun.setFontSize(12);
+                    bodyRun.setFontFamily("Times New Roman");
+                    bodyRun.setText(line);
+                    bodyRun.addBreak();
+                }
+            } catch (IOException e) {
+                System.out.println("An error occurred while reading the source file.");
+                e.printStackTrace();
+            }
+
             // Add references
             List<String> citationlist = new ArrayList<>();
             String answer;
-            
-            System.out.print("Would you like to add citations?(Yes or No):");
+
+            System.out.print("Would you like to add citations? (Yes or No): ");
             answer = userInput3.nextLine();
 
-            while((answer.equalsIgnoreCase("Yes"))){
+            while (answer.equalsIgnoreCase("Yes")) {
                 System.out.println("Please enter the author's name of your reference (Last name, first name.):");
                 String author = userInput3.nextLine();
                 citationlist.add(author);
-        
+
                 System.out.println("Please enter the title of your website:");
                 String websiteTitle = userInput3.nextLine();
                 citationlist.add(websiteTitle);
-        
+
                 System.out.println("Please enter the publisher of your website:");
                 String publisher = userInput3.nextLine();
                 citationlist.add(publisher);
-        
+
                 System.out.println("Please enter the publish date of your reference (mm/dd/yyyy):");
                 String publishDate = userInput3.nextLine();
                 citationlist.add(publishDate);
-        
+
                 System.out.println("Please enter the link to your reference:");
                 String link = userInput3.nextLine();
                 citationlist.add(link);
 
-                System.out.println("Would you like to add another citation? (Yes or No):");
+                System.out.println("Would you like to add another citation? (Yes or No): ");
                 answer = userInput3.nextLine();
-
-                if(answer.equals("No") || answer.equals("no")){
-                    break;
-                }
             }
-
 
             if (!citationlist.isEmpty()) {
                 XWPFParagraph referencesParagraph = file.createParagraph();
@@ -170,32 +212,21 @@ public class EssayFormatter {
                 referencesRun.addBreak();
 
                 for (String citation : citationlist) {
-                    int count = 0;
                     XWPFParagraph paragraph = file.createParagraph();
-                    XWPFRun citationRun = referencesParagraph.createRun();
+                    XWPFRun citationRun = paragraph.createRun();
                     paragraph.setSpacingBetween(2);
                     paragraph.setAlignment(ParagraphAlignment.LEFT);
 
                     citationRun.setFontSize(12);
                     citationRun.setFontFamily("Times New Roman");
                     citationRun.setText(citation);
-                    count += 1;
-                    if(count != 3){
-                        citationRun.setText(",");
-                    }
+                    citationRun.addBreak();
                 }
-
-            }
-            
-                
-                }
-            } catch (IOException e) {
-                System.out.println("An error occurred while reading the source file.");
-                e.printStackTrace();
             }
 
             file.write(output);
             System.out.println("File created successfully: " + fileName);
+
         } catch (IOException e) {
             System.out.println("An error occurred while writing to the file.");
             e.printStackTrace();
