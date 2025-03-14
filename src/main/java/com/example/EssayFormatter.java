@@ -28,7 +28,11 @@ public class EssayFormatter {
         Scanner userInput2 = new Scanner(System.in);
         String userConfirmation = "";
         String email;
+        String name;
         List<String> stringlist;
+
+        System.out.println("Please enter your name:");
+        name = userInput2.nextLine();
 
         System.out.println("Please enter your email:");
         email = userInput2.nextLine();
@@ -45,9 +49,9 @@ public class EssayFormatter {
         } while (userConfirmation.equalsIgnoreCase("No"));
 
         wordDocWithReferences(stringlist, stringlist.get(4));
-        userInput2.close();
 
-        String sql = "INSERT INTO user (column1, column2) VALUES (, )";
+
+        String sql = "INSERT INTO \"user\" (column1=?, column2=?, column3=?) VALUES ( ?,? ,? )";
 
         try {
             // Load MySQL driver
@@ -60,8 +64,10 @@ public class EssayFormatter {
             PreparedStatement pst = con.prepareStatement(sql);
 
             // Set values for placeholders
-            pst.setString(1, "value1");
-            pst.setInt(2, 123);
+            pst.setInt(1, user_id);
+            pst.setString(2, name);
+            pst.setString(3, email);
+            
 
             // Execute the update
             int rowsAffected = pst.executeUpdate();
@@ -110,7 +116,6 @@ public class EssayFormatter {
         title = userInput.nextLine();
         stringlist.add(title);
 
-        userInput.close();
         return stringlist;
     }
 
@@ -209,18 +214,19 @@ public class EssayFormatter {
                 referencesRun.setFontSize(12);
                 referencesRun.setFontFamily("Times New Roman");
                 referencesRun.setText("References:");
-                referencesRun.addBreak();
+               // referencesRun.addBreak();
 
-                for (String citation : citationlist) {
-                    XWPFParagraph paragraph = file.createParagraph();
+               XWPFParagraph paragraph = file.createParagraph();
                     XWPFRun citationRun = paragraph.createRun();
                     paragraph.setSpacingBetween(2);
                     paragraph.setAlignment(ParagraphAlignment.LEFT);
-
+                    StringBuilder citationsText = new StringBuilder();
+                for (String citation : citationlist) {
+                     
                     citationRun.setFontSize(12);
                     citationRun.setFontFamily("Times New Roman");
-                    citationRun.setText(citation);
-                    citationRun.addBreak();
+                    citationsText.append(citation).append(",");
+                    citationRun.setText(",");
                 }
             }
 
@@ -231,7 +237,5 @@ public class EssayFormatter {
             System.out.println("An error occurred while writing to the file.");
             e.printStackTrace();
         }
-
-        userInput3.close();
     }
 }
