@@ -5,4 +5,4 @@ CREATE TABLE "user" (
     PRIMARY KEY(user_id)
 );
 
-SELECT * FROM "user";
+SELECT name FROM "user";

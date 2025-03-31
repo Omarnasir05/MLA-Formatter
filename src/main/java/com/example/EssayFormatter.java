@@ -51,7 +51,7 @@ public class EssayFormatter {
         wordDocWithReferences(stringlist, stringlist.get(4));
 
 
-        String sql = "INSERT INTO \"user\" (column1=?, column2=?, column3=?) VALUES ( ?,? ,? )";
+        String sql = "INSERT INTO user (column1=?, column2=?, column3=?) VALUES ( ?,? ,? )";
 
         try {
             // Load MySQL driver
@@ -185,18 +185,22 @@ public class EssayFormatter {
             while (answer.equalsIgnoreCase("Yes")) {
                 System.out.println("Please enter the author's name of your reference (Last name, first name.):");
                 String author = userInput3.nextLine();
+                author = author + ".";
                 citationlist.add(author);
 
                 System.out.println("Please enter the title of your website:");
                 String websiteTitle = userInput3.nextLine();
+                websiteTitle = websiteTitle +",";
                 citationlist.add(websiteTitle);
 
                 System.out.println("Please enter the publisher of your website:");
                 String publisher = userInput3.nextLine();
+                publisher = publisher + ",";
                 citationlist.add(publisher);
 
                 System.out.println("Please enter the publish date of your reference (mm/dd/yyyy):");
                 String publishDate = userInput3.nextLine();
+                publishDate = publishDate + ","; 
                 citationlist.add(publishDate);
 
                 System.out.println("Please enter the link to your reference:");
@@ -220,13 +224,17 @@ public class EssayFormatter {
                     XWPFRun citationRun = paragraph.createRun();
                     paragraph.setSpacingBetween(2);
                     paragraph.setAlignment(ParagraphAlignment.LEFT);
-                    StringBuilder citationsText = new StringBuilder();
+                    int count = 0 ;
                 for (String citation : citationlist) {
-                     
+                    
                     citationRun.setFontSize(12);
                     citationRun.setFontFamily("Times New Roman");
-                    citationsText.append(citation).append(",");
-                    citationRun.setText(",");
+                    citationRun.setText(citation);
+                    
+                    count++;
+                        if (count == 5){
+                        citationRun.addBreak();
+                        }
                 }
             }
 
