@@ -1,19 +1,19 @@
 {
-    "java.configuration.updateBuildConfiguration": "interactive",
-    "sqltools.connections": [
-        {
-            "mysqlOptions": {
-                "authProtocol": "default",
-                "enableSsl": "Disabled"
-            },
-            "previewLimit": 50,
-            "server": "localhost",
-            "port": 3306,
-            "driver": "MySQL",
-            "name": "EssayFormatterDatabase",
-            "database": "new_db",
-            "username": "root",
-            "connectionTimeout": 30
-        }
-    ]
+  "java.configuration.updateBuildConfiguration": "interactive",
+  "sqltools.connections": [
+    {
+      "mysqlOptions": {
+        "authProtocol": "default",
+        "enableSsl": "Disabled"
+      },
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 3306,
+      "driver": "MySQL",
+      "name": "EssayFormatterDatabase",
+      "database": "new_db",
+      "username": "root",
+      "connectionTimeout": 30
+    }
+  ]
 }
