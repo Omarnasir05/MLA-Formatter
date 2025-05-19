@@ -49,8 +49,8 @@ public class EssayFormatter {
 
         String filePath = wordDocWithReferences(stringlist, stringlist.get(4));
 
-        String sql = "INSERT INTO USER (column1, column2, column3) VALUES (?, ?, ?)";
-        String sql2 = "INSERT INTO ESSAYS (column1, column2) VALUES (?, ?)";
+        String sql = "INSERT INTO `USER` (userid, name, email) VALUES (?, ?, ?)";
+        String sql2 = "INSERT INTO ESSAYS (userid, filePath) VALUES (?, ?)";
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -66,9 +66,10 @@ public class EssayFormatter {
             pst2.setString(2, filePath);
 
             int rowsAffected = pst.executeUpdate();
-            pst2.executeUpdate();
-
+            int rowsAffected2 = pst2.executeUpdate();
+            
             System.out.println(rowsAffected + " row(s) inserted.");
+            con.setAutoCommit(true);
 
             pst.close();
             pst2.close();
