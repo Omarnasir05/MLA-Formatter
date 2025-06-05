@@ -49,8 +49,8 @@ public class EssayFormatter {
 
         String filePath = wordDocWithReferences(stringlist, stringlist.get(4));
 
-        String sql = "INSERT INTO `USER` (userid, name, email) VALUES (?, ?, ?)";
-        String sql2 = "INSERT INTO ESSAYS (userid, filePath) VALUES (?, ?)";
+        String sql = "INSERT INTO USER (userid, name, email) VALUES (?, ?, ?)";
+        String sql2 = "INSERT INTO ESSAYS (userid, fileName) VALUES (?, ?)";
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
